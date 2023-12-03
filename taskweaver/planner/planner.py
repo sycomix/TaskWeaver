@@ -85,7 +85,7 @@ class Planner(Role):
         assert len(self.examples) != 0, "No examples found."
         example_chat_history: List[ChatMessageType] = []
 
-        for _, conversation in enumerate(self.examples):
+        for conversation in self.examples:
             for rnd_idx, chat_round in enumerate(conversation.rounds):
                 if rnd_idx == 0:
                     example_chat_history.append(
@@ -103,7 +103,7 @@ class Planner(Role):
                             format_chat_message(role="assistant", message=message),
                         )
                     else:
-                        message = post.send_from + ": " + post.message
+                        message = f"{post.send_from}: {post.message}"
                         example_chat_history.append(
                             format_chat_message(role="user", message=message),
                         )
@@ -126,19 +126,17 @@ class Planner(Role):
                 if post.send_from == "User":
                     chat_history.append(
                         format_chat_message(
-                            role="user",
-                            message="User: " + post.message,
-                        ),
+                            role="user", message=f"User: {post.message}"
+                        )
                     )
                 elif post.send_from == "CodeInterpreter":
                     chat_history.append(
                         format_chat_message(
-                            role="user",
-                            message="CodeInterpreter: " + post.message,
-                        ),
+                            role="user", message=f"CodeInterpreter: {post.message}"
+                        )
                     )
                 elif post.send_from == "Planner":
-                    if post.send_to == "User" or post.send_to == "CodeInterpreter":
+                    if post.send_to in ["User", "CodeInterpreter"]:
                         planner_message = self.planner_post_translator.post_to_raw_text(
                             post=post,
                         )  # add planner tags here
@@ -151,9 +149,8 @@ class Planner(Role):
                     elif post.send_to == "Planner":
                         chat_history.append(
                             format_chat_message(
-                                role="user",
-                                message="Planner: " + post.message,
-                            ),
+                                role="user", message=f"Planner: {post.message}"
+                            )
                         )
 
         return chat_history
@@ -206,5 +203,4 @@ class Planner(Role):
         return response_post
 
     def get_examples(self) -> List[Conversation]:
-        example_conv_list = load_examples(self.config.example_base_path)
-        return example_conv_list
+        return load_examples(self.config.example_base_path)

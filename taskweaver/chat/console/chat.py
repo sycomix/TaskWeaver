@@ -129,11 +129,11 @@ def chat_taskweaver(app_dir: Optional[str] = None):
                 with lock:
                     stage = process_messages(stage)
 
-                if len(response) > 0:
+                if response:
                     clear_line()
                     break
                 with lock:
-                    thought_animate(stage + "...", frame=counter)
+                    thought_animate(f"{stage}...", frame=counter)
                     counter += 1
                 time.sleep(0.2)
 
